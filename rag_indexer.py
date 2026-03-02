@@ -9,6 +9,7 @@ from chromadb.utils import embedding_functions
 from pypdf import PdfReader
 from PIL import Image
 import pytesseract
+from bs4 import BeautifulSoup
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -72,6 +73,27 @@ class RAGIndexer:
             logging.error(f"Error reading image {file_path} via OCR: {e}")
         return text
 
+    def _extract_text_from_html(self, file_path):
+        text = ""
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                html_content = f.read()
+                
+            soup = BeautifulSoup(html_content, 'html.parser')
+            # Remove script and style elements
+            for script_or_style in soup(["script", "style"]):
+                script_or_style.extract()
+            # Extract text
+            text = soup.get_text(separator="\n")
+            # Collapse spaces
+            lines = (line.strip() for line in text.splitlines())
+            chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+            text = '\n'.join(chunk for chunk in chunks if chunk)
+            
+        except Exception as e:
+            logging.error(f"Error reading HTML {file_path}: {e}")
+        return text
+
     def extract_text_from_file(self, file_path):
         """Dispatches extracting logic based on file extension."""
         ext = os.path.splitext(file_path)[1].lower()
@@ -80,6 +102,8 @@ class RAGIndexer:
             return self._extract_text_from_pdf(file_path)
         elif ext in [".png", ".jpg", ".jpeg", ".bmp"]:
             return self._extract_text_from_image(file_path)
+        elif ext in [".html", ".htm"]:
+            return self._extract_text_from_html(file_path)
         elif ext in [".md", ".txt", ".cpp", ".h", ".cs", ".py", ".json"]:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:

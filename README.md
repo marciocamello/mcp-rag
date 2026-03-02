@@ -100,6 +100,7 @@ Indexes new files into the knowledge base.
 
 - **PDF**: Text extracted via pypdf
 - **Images**: PNG, JPG, JPEG, BMP - text extracted with OCR (Tesseract)
+- **HTML**: HTML and HTM files - parsed with BeautifulSoup, script/style tags removed
 - **Code**: C++, C#, Python, JSON files
 - **Documents**: Markdown, plain text files
 
@@ -123,6 +124,7 @@ See `Pipfile` for complete list:
 - `pypdf`: PDF text extraction
 - `pillow`: Image handling
 - `pytesseract`: OCR integration
+- `beautifulsoup4`: HTML parsing
 - `markdown`: Markdown processing
 
 ## Configuration
@@ -136,6 +138,123 @@ Embedding model: `all-MiniLM-L6-v2` (configurable in rag_indexer.py)
 - The knowledge base is self-contained in the `db/` folder
 - Indexing tracks file modification times to support resumable operations
 - ChromaDB uses persistent SQLite storage
+
+## Integration with AI Tools
+
+### VS Code with Cline or MCP Extensions
+
+1. Install the MCP extension or Cline extension in VS Code
+2. Add configuration to `.vscode/settings.json`:
+
+```json
+{
+  "mcp.servers": {
+    "mcp_rag": {
+      "command": "pipenv",
+      "args": ["run", "python", "server.py"],
+      "cwd": "/path/to/mcp-rag"
+    }
+  }
+}
+```
+
+3. In VS Code, use the MCP commands to search your knowledge base:
+   - Open Command Palette (Ctrl+Shift+P)
+   - Search for "MCP: Call Tool"
+   - Select "search_engine_knowledge"
+
+### Cursor Editor
+
+1. Create a `.cursor/mcp-config.json` in your project:
+
+```json
+{
+  "mcpServers": {
+    "mcp_rag": {
+      "command": "pipenv",
+      "args": ["run", "python", "server.py"],
+      "cwd": "/path/to/mcp-rag"
+    }
+  }
+}
+```
+
+2. In Cursor, use `@mcp-rag` to reference the RAG server in prompts:
+
+```
+@mcp-rag search for architecture patterns in C++
+```
+
+### Anthropic Claude (Claude Desktop)
+
+1. Add to your Claude desktop config (`~/.claude/config.json` or via CLI):
+
+```json
+{
+  "mcpServers": {
+    "mcp_rag": {
+      "command": "pipenv",
+      "args": ["run", "python", "server.py"],
+      "cwd": "/absolute/path/to/mcp-rag"
+    }
+  }
+}
+```
+
+2. In your Claude conversation, use the tool directly:
+
+```
+Use the search_engine_knowledge tool to find information about memory alignment in C++
+```
+
+### Example Workflows
+
+#### Indexing Documentation
+
+```bash
+# Terminal in project
+pipenv run python server.py
+
+# In Cursor/Claude prompt
+@mcp-rag Index all documentation from my project
+# Pass: {"file_path": "/absolute/path/to/docs", "force_reindex": false}
+```
+
+#### Searching Knowledge Base
+
+```
+# In any MCP-enabled editor
+Query: "How should I structure game loops?"
+Domain: "C++"
+
+# Returns relevant chunks from indexed documentation
+```
+
+#### Multiple Tool Calls
+
+```
+# First, index new files
+Call: index_knowledge_file
+Args: {"file_path": "/docs/new_architecture.md"}
+
+# Then search the updated knowledge base
+Call: search_engine_knowledge
+Args: {"query": "class hierarchy design", "domain": "C++"}
+```
+
+### Running as Background Service
+
+For continuous access without restarting:
+
+```bash
+# Windows PowerShell
+Start-Process -NoNewWindow -FilePath "pipenv" -ArgumentList "run python server.py"
+
+# macOS/Linux
+nohup pipenv run python server.py &
+```
+
+Get the process ID and keep it running for multiple editor instances.
 
 ## License
 

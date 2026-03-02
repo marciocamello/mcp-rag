@@ -1,0 +1,20 @@
+# To set up the isolated environment, rigidly run:
+# export PIPENV_VENV_IN_PROJECT=1
+# pipenv install
+
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+mcp = "*"
+chromadb = "*"
+sentence-transformers = "*"
+pypdf = "*"
+markdown = "*"
+pillow = "*"
+pytesseract = "*"
+
+[requires]
+python_version = "3.11"

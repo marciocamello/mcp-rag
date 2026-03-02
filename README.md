@@ -135,10 +135,23 @@ Embedding model: `all-MiniLM-L6-v2` (configurable in rag_indexer.py)
 
 - The knowledge base is self-contained in the `db/` folder
 - Indexing tracks file modification times to support resumable operations
-- ChromaDB uses persistent SQLite storageigurable in rag_indexer.py)
-
-## Notes
-
-- The knowledge base is self-contained in the `db/` folder
-- Indexing tracks file modification times to support resumable operations
 - ChromaDB uses persistent SQLite storage
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+Created by [Marcio Vale](https://github.com/marciocamello)
+
+- Frontend Developer at Smartdigit
+- GamePlay Design student with Unreal Engine, Blender, and ZBrush
+- Over 15 years of experience in software development
+- Location: Portugal
+
+For more information, visit:
+
+- GitHub: [github.com/marciocamello](https://github.com/marciocamello)
+- Portfolio: [vovozera.com](http://vovozera.com/)
+- ArtStation: [marcioavelinodovale](https://www.artstation.com/marcioavelinodovale)

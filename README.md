@@ -37,6 +37,26 @@ pipenv install
 
 If you don't have pyenv installed, you can install Python 3.11 directly from your package manager or [python.org](https://www.python.org/downloads/).
 
+### Hugging Face Token Setup
+
+To use private models or access Hugging Face resources:
+
+1. Get your token from [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+
+2. Copy `env_sample` to `.env`:
+
+```bash
+cp env_sample .env
+```
+
+3. Add your token to `.env`:
+
+```plaintext
+HF_TOKEN="your_huggingface_token_here"
+```
+
+The server will automatically load this token when initialized.
+
 ## Project Structure
 
 ```
